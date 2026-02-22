@@ -2,6 +2,7 @@ package com.company.attendanceapp.presentation.screens.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.company.attendanceapp.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    // private val authRepository: AuthRepository, // TODO
-    // private val userPreferences: UserPreferencesRepository // TODO
+    private val authRepository: AuthRepository
+    // private val userPreferences: UserPreferencesRepository // TODO: Check onboarding status
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
@@ -25,12 +26,10 @@ class SplashViewModel @Inject constructor(
 
     private fun checkAppState() {
         viewModelScope.launch {
-            // Simulate checks
             val startTime = System.currentTimeMillis()
 
-            // TODO: Check actual auth state
-            val isAuthenticated = false
-            val isOnboardingCompleted = false
+            val isAuthenticated = authRepository.isUserLoggedIn()
+            val isOnboardingCompleted = true // TODO: Fetch from DataStore
 
             // Ensure minimum display duration of 2000ms
             val elapsedTime = System.currentTimeMillis() - startTime
