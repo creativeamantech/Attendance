@@ -10,8 +10,11 @@ import androidx.navigation.compose.composable
 import com.company.attendanceapp.presentation.components.BottomNavBar
 import com.company.attendanceapp.presentation.screens.auth.LoginScreen
 import com.company.attendanceapp.presentation.screens.checkin.CheckInScreen
+import com.company.attendanceapp.presentation.screens.history.HistoryScreen
 import com.company.attendanceapp.presentation.screens.home.HomeScreen
 import com.company.attendanceapp.presentation.screens.onboarding.OnboardingScreen
+import com.company.attendanceapp.presentation.screens.profile.ProfileScreen
+import com.company.attendanceapp.presentation.screens.reports.ReportsScreen
 import com.company.attendanceapp.presentation.screens.splash.SplashScreen
 
 @Composable
@@ -71,10 +74,19 @@ fun AppNavGraph(navController: NavHostController) {
                 CheckInScreen(navController = navController)
             }
 
+            composable(route = Screen.History.route) {
+                HistoryScreen(navController = navController)
+            }
+
+            composable(route = Screen.Reports.route) {
+                ReportsScreen(navController = navController)
+            }
+
+            composable(route = Screen.Profile.route) {
+                ProfileScreen(navController = navController)
+            }
+
             // Stubs for other screens
-            composable(route = Screen.History.route) { }
-            composable(route = Screen.Reports.route) { }
-            composable(route = Screen.Profile.route) { }
             composable(route = Screen.Notifications.route) { }
             composable(route = Screen.Schedule.route) { }
             composable(route = Screen.Leave.route) { }
