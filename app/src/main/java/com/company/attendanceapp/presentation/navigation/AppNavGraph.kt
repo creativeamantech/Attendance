@@ -12,9 +12,11 @@ import com.company.attendanceapp.presentation.screens.auth.LoginScreen
 import com.company.attendanceapp.presentation.screens.checkin.CheckInScreen
 import com.company.attendanceapp.presentation.screens.history.HistoryScreen
 import com.company.attendanceapp.presentation.screens.home.HomeScreen
+import com.company.attendanceapp.presentation.screens.leave.LeaveScreen
 import com.company.attendanceapp.presentation.screens.onboarding.OnboardingScreen
 import com.company.attendanceapp.presentation.screens.profile.ProfileScreen
 import com.company.attendanceapp.presentation.screens.reports.ReportsScreen
+import com.company.attendanceapp.presentation.screens.schedule.ScheduleScreen
 import com.company.attendanceapp.presentation.screens.splash.SplashScreen
 
 @Composable
@@ -88,8 +90,14 @@ fun AppNavGraph(navController: NavHostController) {
 
             // Stubs for other screens
             composable(route = Screen.Notifications.route) { }
-            composable(route = Screen.Schedule.route) { }
-            composable(route = Screen.Leave.route) { }
+
+            composable(route = Screen.Schedule.route) {
+                ScheduleScreen(navController = navController)
+            }
+
+            composable(route = Screen.Leave.route) {
+                LeaveScreen(navController = navController)
+            }
         }
     }
 }
