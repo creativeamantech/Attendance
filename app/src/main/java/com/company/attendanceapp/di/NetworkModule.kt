@@ -46,4 +46,10 @@ object NetworkModule {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideGoogleSheetsApi(retrofit: Retrofit): com.company.attendanceapp.data.remote.sheets.GoogleSheetsApi {
+        return retrofit.create(com.company.attendanceapp.data.remote.sheets.GoogleSheetsApi::class.java)
+    }
 }

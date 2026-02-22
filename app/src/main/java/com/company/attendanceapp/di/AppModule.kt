@@ -27,4 +27,10 @@ object AppModule {
     fun provideFirebaseAuth(): FirebaseAuth {
         return Firebase.auth
     }
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(@dagger.hilt.android.qualifiers.ApplicationContext context: Context): androidx.work.WorkManager {
+        return androidx.work.WorkManager.getInstance(context)
+    }
 }

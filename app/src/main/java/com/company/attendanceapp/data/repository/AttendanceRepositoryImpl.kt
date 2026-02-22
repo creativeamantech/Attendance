@@ -1,9 +1,13 @@
 package com.company.attendanceapp.data.repository
 
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.company.attendanceapp.core.common.Resource
+import com.company.attendanceapp.data.local.database.dao.EmployeeDao
 import com.company.attendanceapp.domain.model.Attendance
 import com.company.attendanceapp.domain.model.AttendanceStatus
 import com.company.attendanceapp.domain.repository.AttendanceRepository
+import com.company.attendanceapp.worker.SyncAttendanceWorker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,12 +16,17 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 class AttendanceRepositoryImpl @Inject constructor(
-    // private val attendanceDao: AttendanceDao, // TODO
-    // private val sheetsApi: GoogleSheetsApi // TODO
+    private val employeeDao: EmployeeDao,
+    private val workManager: WorkManager
 ) : AttendanceRepository {
 
     override fun getAttendanceForDate(employeeId: String, date: LocalDate): Flow<Resource<Attendance?>> = flow {
         emit(Resource.Loading())
+
+        // In a real app, we would query Room first
+        // For now, trigger a background sync to keep data fresh
+        triggerSync()
+
         delay(500) // Mock DB read
 
         // Mock data: Today's attendance
@@ -144,5 +153,10 @@ class AttendanceRepositoryImpl @Inject constructor(
                 updatedAt = LocalDateTime.now()
             )
         )
+    }
+
+    private fun triggerSync() {
+        val workRequest = OneTimeWorkRequestBuilder<SyncAttendanceWorker>().build()
+        workManager.enqueue(workRequest)
     }
 }
