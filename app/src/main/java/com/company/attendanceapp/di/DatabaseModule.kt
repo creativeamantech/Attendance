@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.company.attendanceapp.core.common.Constants
 import com.company.attendanceapp.data.local.database.AttendanceDatabase
+import com.company.attendanceapp.data.local.database.dao.AttendanceDao
 import com.company.attendanceapp.data.local.database.dao.EmployeeDao
+import com.company.attendanceapp.data.local.database.dao.ShiftDao
+import com.company.attendanceapp.data.local.database.dao.SyncQueueDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,5 +33,23 @@ object DatabaseModule {
     @Singleton
     fun provideEmployeeDao(database: AttendanceDatabase): EmployeeDao {
         return database.employeeDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAttendanceDao(database: AttendanceDatabase): AttendanceDao {
+        return database.attendanceDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideShiftDao(database: AttendanceDatabase): ShiftDao {
+        return database.shiftDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncQueueDao(database: AttendanceDatabase): SyncQueueDao {
+        return database.syncQueueDao()
     }
 }
