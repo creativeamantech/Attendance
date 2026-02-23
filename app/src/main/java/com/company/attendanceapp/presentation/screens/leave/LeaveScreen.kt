@@ -38,8 +38,12 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -193,7 +197,66 @@ fun ApplyLeaveContent(
     isLoading: Boolean
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var showFromDatePicker by remember { mutableStateOf(false) }
+    var showToDatePicker by remember { mutableStateOf(false) }
+
     val leaveTypes = listOf("Annual Leave", "Sick Leave", "Casual Leave", "WFH", "Compensatory")
+
+    if (showFromDatePicker) {
+        val datePickerState = rememberDatePickerState()
+        val confirmEnabled = remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
+        DatePickerDialog(
+            onDismissRequest = { showFromDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showFromDatePicker = false
+                        datePickerState.selectedDateMillis?.let {
+                            viewModel.onEvent(LeaveEvent.FromDateChanged(java.time.Instant.ofEpochMilli(it).atZone(java.time.ZoneId.systemDefault()).toLocalDate()))
+                        }
+                    },
+                    enabled = confirmEnabled.value
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showFromDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    if (showToDatePicker) {
+        val datePickerState = rememberDatePickerState()
+        val confirmEnabled = remember { derivedStateOf { datePickerState.selectedDateMillis != null } }
+        DatePickerDialog(
+            onDismissRequest = { showToDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showToDatePicker = false
+                        datePickerState.selectedDateMillis?.let {
+                            viewModel.onEvent(LeaveEvent.ToDateChanged(java.time.Instant.ofEpochMilli(it).atZone(java.time.ZoneId.systemDefault()).toLocalDate()))
+                        }
+                    },
+                    enabled = confirmEnabled.value
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showToDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -233,24 +296,48 @@ fun ApplyLeaveContent(
             }
         }
 
-        // Date Range (Mocked for now as text fields)
+        // Date Range
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(
-                value = fromDate?.format(DateTimeFormatter.ISO_DATE) ?: "",
-                onValueChange = { /* TODO: Date Picker */ },
-                label = { Text("From Date") },
-                modifier = Modifier.weight(1f).clickable { viewModel.onEvent(LeaveEvent.FromDateChanged(java.time.LocalDate.now())) },
-                readOnly = true,
-                trailingIcon = { Icon(Icons.Default.CalendarMonth, null) }
-            )
-            OutlinedTextField(
-                value = toDate?.format(DateTimeFormatter.ISO_DATE) ?: "",
-                onValueChange = { /* TODO: Date Picker */ },
-                label = { Text("To Date") },
-                modifier = Modifier.weight(1f).clickable { viewModel.onEvent(LeaveEvent.ToDateChanged(java.time.LocalDate.now().plusDays(2))) },
-                readOnly = true,
-                trailingIcon = { Icon(Icons.Default.CalendarMonth, null) }
-            )
+            Box(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = fromDate?.format(DateTimeFormatter.ISO_DATE) ?: "",
+                    onValueChange = { },
+                    label = { Text("From Date") },
+                    modifier = Modifier.fillMaxWidth(),
+                    readOnly = true,
+                    trailingIcon = { Icon(Icons.Default.CalendarMonth, null) },
+                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        .also { interactionSource ->
+                            androidx.compose.runtime.LaunchedEffect(interactionSource) {
+                                interactionSource.interactions.collect {
+                                    if (it is androidx.compose.foundation.interaction.PressInteraction.Release) {
+                                        showFromDatePicker = true
+                                    }
+                                }
+                            }
+                        }
+                )
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                OutlinedTextField(
+                    value = toDate?.format(DateTimeFormatter.ISO_DATE) ?: "",
+                    onValueChange = { },
+                    label = { Text("To Date") },
+                    modifier = Modifier.fillMaxWidth(),
+                    readOnly = true,
+                    trailingIcon = { Icon(Icons.Default.CalendarMonth, null) },
+                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        .also { interactionSource ->
+                            androidx.compose.runtime.LaunchedEffect(interactionSource) {
+                                interactionSource.interactions.collect {
+                                    if (it is androidx.compose.foundation.interaction.PressInteraction.Release) {
+                                        showToDatePicker = true
+                                    }
+                                }
+                            }
+                        }
+                )
+            }
         }
 
         // Reason
