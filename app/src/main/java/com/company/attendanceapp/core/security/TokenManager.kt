@@ -3,6 +3,7 @@ package com.company.attendanceapp.core.security
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -21,6 +22,8 @@ class TokenManager @Inject constructor(
     companion object {
         private val AUTH_TOKEN_KEY = stringPreferencesKey("auth_token")
         private val USER_ID_KEY = stringPreferencesKey("user_id")
+        private val USER_ROLE_KEY = stringPreferencesKey("user_role")
+        private val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_completed")
     }
 
     val authToken: Flow<String?> = context.dataStore.data.map { preferences ->
@@ -33,6 +36,10 @@ class TokenManager @Inject constructor(
 
     val userRole: Flow<String?> = context.dataStore.data.map { preferences ->
         preferences[USER_ROLE_KEY]
+    }
+
+    val isOnboardingCompleted: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[ONBOARDING_COMPLETED_KEY] ?: false
     }
 
     suspend fun saveToken(token: String) {
@@ -50,6 +57,12 @@ class TokenManager @Inject constructor(
     suspend fun saveUserRole(role: String) {
         context.dataStore.edit { preferences ->
             preferences[USER_ROLE_KEY] = role
+        }
+    }
+
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[ONBOARDING_COMPLETED_KEY] = completed
         }
     }
 

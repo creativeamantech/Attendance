@@ -16,10 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,17 +31,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.company.attendanceapp.R
+import com.company.attendanceapp.core.security.TokenManager
 import com.company.attendanceapp.presentation.components.common.AppLottieAnimation
 import com.company.attendanceapp.presentation.navigation.Screen
 import com.company.attendanceapp.presentation.theme.Primary
 import com.company.attendanceapp.presentation.theme.PrimaryContainer
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class OnboardingViewModel @Inject constructor(
+    private val tokenManager: TokenManager
+) : ViewModel() {
+    fun completeOnboarding() {
+        viewModelScope.launch {
+            tokenManager.setOnboardingCompleted(true)
+        }
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnboardingScreen(navController: NavController) {
+fun OnboardingScreen(
+    navController: NavController,
+    viewModel: OnboardingViewModel = hiltViewModel()
+) {
     val pagerState = rememberPagerState(pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
@@ -90,7 +108,12 @@ fun OnboardingScreen(navController: NavController) {
             ) {
                 // Skip Button
                 if (pagerState.currentPage < 2) {
-                    TextButton(onClick = { navController.navigate(Screen.Login.route) }) {
+                    TextButton(onClick = {
+                        viewModel.completeOnboarding()
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Onboarding.route) { inclusive = true }
+                        }
+                    }) {
                         Text("Skip", color = Color.Gray)
                     }
                 } else {
@@ -119,6 +142,7 @@ fun OnboardingScreen(navController: NavController) {
                             scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                         } else {
                             // Finish Onboarding
+                            viewModel.completeOnboarding()
                             navController.navigate(Screen.Login.route) {
                                 popUpTo(Screen.Onboarding.route) { inclusive = true }
                             }
