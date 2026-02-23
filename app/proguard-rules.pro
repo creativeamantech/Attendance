@@ -1,5 +1,5 @@
 # Keep Google Sheets API models
--keep class com.company.attendanceapp.data.remote.dto.** { *; }
+-keep class com.company.attendanceapp.data.remote.sheets.dto.** { *; }
 # Keep Retrofit interfaces
 -keep,allowobfuscation interface * { @retrofit2.http.* <methods>; }
 # Keep Moshi adapters

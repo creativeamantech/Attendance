@@ -41,8 +41,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -146,19 +150,27 @@ fun HomeScreen(
 
             // 1. Status Hero Card
             item {
+                val checkIn = state.todayAttendance?.checkInTime
+                val durationText = remember(checkIn) {
+                    if (checkIn != null) {
+                        val now = java.time.LocalDateTime.now()
+                        val duration = java.time.Duration.between(checkIn, now)
+                        val hours = duration.toHours()
+                        val minutes = duration.toMinutes() % 60
+                        "${hours}h ${minutes}m"
+                    } else {
+                        "--:--"
+                    }
+                }
+
                 StatusHeroCard(
-                    status = state.todayAttendance?.status ?: AttendanceStatus.ABSENT, // Default to absent if no data yet
+                    status = state.todayAttendance?.status ?: AttendanceStatus.ABSENT,
                     checkInTime = state.todayAttendance?.checkInTime?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "--:--",
                     checkOutTime = state.todayAttendance?.checkOutTime?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "--:--",
-                    duration = "2h 34m", // TODO: Calculate dynamically
+                    duration = durationText,
                     isCheckedIn = state.isCheckedIn,
                     onCheckAction = {
-                        if (state.isCheckedIn) {
-                            // Navigate to checkout logic (or same screen with diff state)
-                            navController.navigate(Screen.CheckIn.route)
-                        } else {
-                            navController.navigate(Screen.CheckIn.route)
-                        }
+                        navController.navigate(Screen.CheckIn.route)
                     }
                 )
             }
@@ -244,9 +256,17 @@ fun StatusHeroCard(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Clock Display (Mock)
+                // Live Clock
+                var currentTime by remember { mutableStateOf(java.time.LocalDateTime.now()) }
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        currentTime = java.time.LocalDateTime.now()
+                        kotlinx.coroutines.delay(1000)
+                    }
+                }
+
                 Text(
-                    text = "09:41:32 AM", // TODO: Live clock
+                    text = currentTime.format(DateTimeFormatter.ofPattern("hh:mm:ss a")),
                     style = MaterialTheme.typography.displayMedium,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
