@@ -34,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.company.attendanceapp.R
+import com.company.attendanceapp.presentation.components.common.AppLottieAnimation
 import com.company.attendanceapp.presentation.theme.Primary
 import com.company.attendanceapp.presentation.theme.PrimaryContainer
 import kotlinx.coroutines.delay
@@ -133,8 +135,8 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Loading Animation
-            CircularProgressIndicator(
-                color = Color.White,
+            AppLottieAnimation(
+                resId = R.raw.anim_loading,
                 modifier = Modifier.size(48.dp)
             )
 

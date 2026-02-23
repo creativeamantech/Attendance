@@ -44,6 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.company.attendanceapp.R
+import com.company.attendanceapp.presentation.components.common.AppLottieAnimation
 import com.company.attendanceapp.presentation.theme.Error
 import com.company.attendanceapp.presentation.theme.ErrorContainer
 import com.company.attendanceapp.presentation.theme.Primary
@@ -236,11 +238,10 @@ fun CheckInScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(120.dp)
+                    AppLottieAnimation(
+                        resId = R.raw.anim_success,
+                        modifier = Modifier.size(200.dp),
+                        shouldAnimate = true
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(

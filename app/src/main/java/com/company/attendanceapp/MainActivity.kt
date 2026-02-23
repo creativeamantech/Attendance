@@ -7,14 +7,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.company.attendanceapp.core.security.TokenManager
 import com.company.attendanceapp.presentation.navigation.AppNavGraph
 import com.company.attendanceapp.presentation.theme.AttendanceAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var tokenManager: TokenManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -23,7 +31,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AttendanceApp()
+                    val userRole by tokenManager.userRole.collectAsState(initial = null)
+                    AttendanceApp(userRole = userRole)
                 }
             }
         }
@@ -31,7 +40,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AttendanceApp() {
+fun AttendanceApp(userRole: String?) {
     val navController = rememberNavController()
-    AppNavGraph(navController = navController)
+    AppNavGraph(navController = navController, userRole = userRole)
 }

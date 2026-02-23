@@ -31,6 +31,10 @@ class TokenManager @Inject constructor(
         preferences[USER_ID_KEY]
     }
 
+    val userRole: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[USER_ROLE_KEY]
+    }
+
     suspend fun saveToken(token: String) {
         context.dataStore.edit { preferences ->
             preferences[AUTH_TOKEN_KEY] = token
@@ -40,6 +44,12 @@ class TokenManager @Inject constructor(
     suspend fun saveUserId(id: String) {
         context.dataStore.edit { preferences ->
             preferences[USER_ID_KEY] = id
+        }
+    }
+
+    suspend fun saveUserRole(role: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_ROLE_KEY] = role
         }
     }
 

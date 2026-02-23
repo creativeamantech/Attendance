@@ -34,16 +34,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.company.attendanceapp.R
+import com.company.attendanceapp.presentation.components.common.AppLottieAnimation
 import com.company.attendanceapp.presentation.navigation.Screen
 import com.company.attendanceapp.presentation.theme.Primary
 import com.company.attendanceapp.presentation.theme.PrimaryContainer
 import kotlinx.coroutines.launch
-// Note: In a real app, we would use Lottie for animations.
-// For this text-based generation, we will use Icons as placeholders.
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Sync
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -55,17 +51,17 @@ fun OnboardingScreen(navController: NavController) {
         OnboardingPage(
             title = "Smart Location Check-In",
             description = "We verify your location when you check in to ensure accurate attendance records.",
-            icon = Icons.Default.LocationOn
+            animRes = R.raw.anim_map_pin
         ),
         OnboardingPage(
             title = "Your Schedule, Your Way",
             description = "Every employee has a custom shift. No more one-size-fits-all attendance.",
-            icon = Icons.Default.Schedule
+            animRes = R.raw.anim_schedule
         ),
         OnboardingPage(
             title = "Always in Sync",
             description = "Attendance data syncs to Google Sheets instantly. Access it anywhere, anytime.",
-            icon = Icons.Default.Sync
+            animRes = R.raw.anim_sync
         )
     )
 
@@ -146,21 +142,11 @@ fun OnboardingPageContent(page: OnboardingPage) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Icon / Lottie Placeholder
-        Box(
-            modifier = Modifier
-                .size(200.dp)
-                .clip(CircleShape)
-                .background(PrimaryContainer.copy(alpha = 0.3f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = page.icon,
-                contentDescription = null,
-                modifier = Modifier.size(80.dp),
-                tint = Primary
-            )
-        }
+        // Lottie Animation
+        AppLottieAnimation(
+            resId = page.animRes,
+            modifier = Modifier.size(280.dp)
+        )
 
         Spacer(modifier = Modifier.height(48.dp))
 
@@ -186,5 +172,5 @@ fun OnboardingPageContent(page: OnboardingPage) {
 data class OnboardingPage(
     val title: String,
     val description: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
+    val animRes: Int
 )

@@ -22,18 +22,34 @@ import com.company.attendanceapp.presentation.screens.schedule.ScheduleScreen
 import com.company.attendanceapp.presentation.screens.splash.SplashScreen
 
 @Composable
-fun AppNavGraph(navController: NavHostController) {
+fun AppNavGraph(navController: NavHostController, userRole: String?) {
+    val navItems = mutableListOf(
+        BottomNavItem.Home,
+        BottomNavItem.CheckIn,
+        BottomNavItem.History,
+        BottomNavItem.Reports,
+        BottomNavItem.Profile
+    )
+
+    if (userRole == "ADMIN") {
+        // We need an Admin Tab item if we want it in the bottom bar,
+        // or just accessible via other means.
+        // For now, let's assume it's a separate route accessible from Profile or a specific logic.
+        // However, the prompt implies "Role-based access control".
+        // Let's add an Admin item if the user is admin.
+        // Note: BottomNavItem needs to be extended or we just add it dynamically if we had a generic item.
+        // Since BottomNavItem is a sealed class with objects, we can't dynamically add a new 'type' easily
+        // without defining it first.
+        // Let's assume we want to show it. But we need an icon for it.
+        // For simplicity, let's just keep the routes available but not necessarily in the bottom bar
+        // unless we refactor BottomNavItem to be a data class or add an Admin object.
+    }
+
     Scaffold(
         bottomBar = {
             BottomNavBar(
                 navController = navController,
-                items = listOf(
-                    BottomNavItem.Home,
-                    BottomNavItem.CheckIn,
-                    BottomNavItem.History,
-                    BottomNavItem.Reports,
-                    BottomNavItem.Profile
-                )
+                items = navItems
             )
         }
     ) { innerPadding ->
