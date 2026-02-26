@@ -1,23 +1,29 @@
 package com.company.attendanceapp.data.local.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.company.attendanceapp.data.local.database.entities.SyncQueueEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SyncQueueDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSyncItem(item: SyncQueueEntity)
-
     @Query("SELECT * FROM sync_queue ORDER BY createdAt ASC")
-    suspend fun getAllSyncItems(): List<SyncQueueEntity>
+    fun getAllPending(): Flow<List<SyncQueueEntity>>
 
-    @Delete
-    suspend fun deleteSyncItem(item: SyncQueueEntity)
+    @Query("SELECT * FROM sync_queue WHERE entityId = :entityId")
+    suspend fun getByEntityId(entityId: String): SyncQueueEntity?
 
-    @Query("SELECT count(*) FROM sync_queue")
-    suspend fun getPendingCount(): Int
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertToQueue(entity: SyncQueueEntity)
+
+    @Query("UPDATE sync_queue SET retryCount = :retryCount, lastAttemptAt = :lastAttemptAt WHERE queueId = :queueId")
+    suspend fun updateRetryCount(queueId: String, retryCount: Int, lastAttemptAt: Long)
+
+    @Query("DELETE FROM sync_queue WHERE queueId = :queueId")
+    suspend fun deleteFromQueue(queueId: String)
+
+    @Query("DELETE FROM sync_queue WHERE retryCount >= 3")
+    suspend fun deleteAllSynced()
 }

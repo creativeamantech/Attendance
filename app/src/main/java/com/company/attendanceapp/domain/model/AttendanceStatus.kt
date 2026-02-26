@@ -2,11 +2,12 @@ package com.company.attendanceapp.domain.model
 
 enum class AttendanceStatus {
     PRESENT,
-    ABSENT,
     LATE,
-    EARLY_LEAVE,
+    ABSENT,
+    HALF_DAY,
     ON_LEAVE,
+    WORK_FROM_HOME,
     HOLIDAY,
-    WEEKEND,
-    UNKNOWN
+    INCOMPLETE,
+    OUT_OF_ZONE
 }

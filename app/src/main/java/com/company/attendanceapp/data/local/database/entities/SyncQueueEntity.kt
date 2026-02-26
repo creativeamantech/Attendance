@@ -5,10 +5,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "sync_queue")
 data class SyncQueueEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val entityType: String, // e.g., "ATTENDANCE"
-    val operation: String,  // "INSERT", "UPDATE"
-    val payload: String,    // JSON
+    @PrimaryKey val queueId: String,
+    val entityType: String, // ATTENDANCE / LEAVE / EMPLOYEE
+    val entityId: String,
+    val operation: String, // INSERT / UPDATE / DELETE
+    val payload: String, // JSON string
+    val retryCount: Int = 0,
     val createdAt: Long,
-    val retryCount: Int = 0
+    val lastAttemptAt: Long?
 )
